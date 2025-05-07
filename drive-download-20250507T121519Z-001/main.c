@@ -6,7 +6,7 @@
 /*   By: abkhefif <abkhefif@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 11:25:20 by tcaccava          #+#    #+#             */
-/*   Updated: 2025/05/07 19:12:37 by abkhefif         ###   ########.fr       */
+/*   Updated: 2025/05/07 19:37:02 by abkhefif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,8 +103,8 @@ int	main(void)
 
 	
 	// Posizione e orientamento iniziale del giocatore
-	x_player = 150; // Posizione iniziale in pixel
-	y_player = 150;
+	x_player = 100; // Posizione iniziale in pixel
+	y_player = 100;
 	player_angle = 0; // Guardando lungo l'asse X positivo
 	// Calcolo dei raggi per ogni colonna dello schermo
 	i = 0;

@@ -6,7 +6,7 @@
 /*   By: abkhefif <abkhefif@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/05 10:09:42 by tcaccava          #+#    #+#             */
-/*   Updated: 2025/05/07 19:14:26 by abkhefif         ###   ########.fr       */
+/*   Updated: 2025/05/07 19:35:41 by abkhefif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,13 +181,19 @@ void render_column(int column_x, double distance, t_angle_data angles,
 		}
 		else // Pour le sol
 		{
-			// Approche simplifiée pour le sol
-			// Calcul de la distance relative depuis l'horizon
-			double floorDistPercent = (double)(y - draw_end) / (double)(DISPLAY_HEIGHT - draw_end);
+			// Calcul de la distance relative par rapport à l'horizon
+			double row_distance = (DISPLAY_HEIGHT / 2.0) / (y - DISPLAY_HEIGHT / 2.0);
 			
-			// Coordonnées de texture qui changent graduellement avec la distance
-			texture_x = (column_x / 4 + (int)(floorDistPercent * 20)) % TILE_SIZE;
-			texture_y = (y / 4 + (int)(floorDistPercent * 20)) % TILE_SIZE;
+			// Position sur le sol en tenant compte de l'angle et la distance
+			double floor_x = x_player + row_distance * cos(angles.radiant_angle) / 4.0;
+			double floor_y = y_player + row_distance * sin(angles.radiant_angle) / 4.0;
+			
+			// Conversion en coordonnées de texture (modulo pour répétition)
+			texture_x = ((int)(floor_x * TILE_SIZE)) % TILE_SIZE;
+			texture_y = ((int)(floor_y * TILE_SIZE)) % TILE_SIZE;
+			
+			// Assombrissement en fonction de la distance
+			double dim_factor = 1.0 - fmin(1.0, row_distance / 15.0);
 			
 			if (texture_x >= 0 && texture_x < TILE_SIZE && 
 				texture_y >= 0 && texture_y < TILE_SIZE && 
@@ -195,7 +201,13 @@ void render_column(int column_x, double distance, t_angle_data angles,
 			{
 				// Récupération de la couleur dans la texture du sol
 				char *texture_pixel = map->floor_texture.addr + (texture_y * map->floor_texture.line_length + texture_x * (map->floor_texture.bits_per_pixel / 8));
-				color = *(unsigned int *)texture_pixel;
+				unsigned int base_color = *(unsigned int *)texture_pixel;
+				
+				// Appliquer l'assombrissement (simplification de color_dim)
+				unsigned int r = ((base_color >> 16) & 0xFF) * dim_factor;
+				unsigned int g = ((base_color >> 8) & 0xFF) * dim_factor;
+				unsigned int b = (base_color & 0xFF) * dim_factor;
+				color = (r << 16) | (g << 8) | b;
 			}
 			else
 			{
